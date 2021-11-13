@@ -1,0 +1,225 @@
+body {
+  font-family: sans-serif;
+  font-size: 14px;
+  color: #494949;
+}
+.dir a {
+  text-decoration: none;
+  color: #084999;
+}
+.dir a:visited {
+  color: #6c00a2;
+}
+.dir a::before {
+  content: '';
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  background-size: 20px;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-right: 5px;
+  background-image: url('../img/material_insert_drive_file.svg');
+  background-size: 0.7em;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.3);
+}
+a.html::before {
+  background-image: url('../img/html.svg');
+  background-size: 1.2em;
+}
+a.index::before {
+  background-color: rgba(0,0,0,0.8);
+}
+a.css::before {
+  background-image: url('../img/css.svg');
+  background-size: 1.2em;
+}
+a.js::before {
+  background-image: url('../img/js.svg');
+  background-size: 15px;
+}
+a.img::before {
+  background-image: url('../img/material_image.svg');
+  background-size: 10px;
+}
+.body {
+  padding-left: 20px;
+  border-left: 1px solid rgba(0,0,0,0.1);
+}
+/* https://www.a11yproject.com/posts/2013-01-11-how-to-hide-content/ */
+.dir input[type=checkbox] {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+.dir input[type=checkbox]:checked ~ .body {
+  display: none;
+}
+.head::before {
+  content: '';
+  display: inline-block;
+  height: 0;
+  width: 0;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  border-top: 5px solid rgba(0,0,0,0.5);
+  margin: 0 5px;
+  margin-bottom: 2px;
+}
+.dir input[type=checkbox]:checked ~ .head::before {
+  transform: rotate(-90deg);
+}
+.head, .dir a {
+  display: block;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 2px 2px;
+  margin: 10px 0;
+}
+.head:hover, .dir a:hover {
+  background-color: hsl(214, 91%, 97%);
+  border-color: hsl(214, 91%, 85%);
+}
+.dir input[type=checkbox]:focus ~ .head, .dir a:focus {
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.8), rgba(255,255,255,0));
+  background-color: hsl(214, 91%, 89%);
+  border-color: rgb(125, 162, 206);
+}
+body > .dir {
+  max-width: 500px;
+  border: 1px solid rgba(0,0,0,0.1);
+  margin: 0 auto;
+  padding: 2px;
+}
+.cached {
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.loading {
+  font-style: italic;
+}
+.cache-wrapper {
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 2px;
+  margin: 5px auto;
+  max-width: 500px;
+}
+.cache-new-wrapper {
+  display: flex;
+}
+.cache-new-url {
+  flex: auto;
+  -webkit-appearance: none;
+  background: none;
+  border: 1px solid rgba(0,0,0,0.15);
+  font: inherit;
+  border-radius: 2px;
+  margin: 2px;
+  color: black;
+  padding: 0 3px;
+}
+.cache-new-url:focus {
+  border-color: rgb(125, 162, 206);
+}
+.error {
+  color: #bd5555;
+}
+h1, .btn-wrapper, p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 500px;
+  margin: 0 auto;
+  font-weight: normal;
+}
+button, .button, .checkbox {
+  -webkit-appearance: none;
+  background: none;
+  border: 1px solid rgba(0,0,0,0.15);
+  background-color: rgba(0,0,0,0.05);
+  font: inherit;
+  border-radius: 2px;
+  margin: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+  display: inline-block;
+  padding: 5px 10px;
+  text-align: center;
+}
+button:hover, .button:hover {
+  background-color: hsl(214, 91%, 97%);
+  border-color: hsl(214, 91%, 85%);
+}
+button:focus, .button:focus {
+  background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.8), rgba(255,255,255,0));
+  background-color: hsl(214, 91%, 89%);
+  border-color: rgb(125, 162, 206);
+}
+:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+body.hideuncached > .dir a:not(.cached) {
+  display: none;
+}
+.target {
+  position: fixed;
+  top: 0;
+}
+.checkbox {
+  display: none;
+  background-color: transparent;
+  padding: 0;
+  padding-right: 10px;
+  height: 30px;
+  align-items: center;
+  overflow: hidden;
+}
+.checkbox::before {
+  content: '';
+  width: 30px;
+  margin-right: 10px;
+  align-self: stretch;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+.checked {
+  border-color: rgba(0, 0, 0, 0.5);
+}
+.checked::before {
+  background-color: rgba(0, 0, 0, 0.5);
+  background-image: url('../img/material_check.svg');
+  background-size: 18px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+:focus {
+  outline: none;
+}
+@media (hover: hover) {
+  .btn-wrapper {
+    margin: 0 auto;
+  }
+  .head, .dir a {
+    padding: 0 2px;
+    margin: 0;
+  }
+  button, .button, .checkbox {
+    padding: 0 3px;
+    margin: 2px;
+  }
+  .checkbox {
+    padding-left: 0;
+    height: 20px;
+  }
+  .checkbox::before {
+    margin-right: 3px;
+    width: 20px;
+  }
+}

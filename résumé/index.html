@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Résumé</title>
+    <meta name="description" content="Ahhh" />
+
+    <!-- https://fonts.google.com/share?selection.family=Montserrat:wght@700;900%7CNoto%20Sans%20TC:wght@900%7COpen%20Sans:ital,wght@0,400;0,700;1,400%7CRaleway:wght@900 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Noto+Sans+TC:wght@900&family=Open+Sans:ital,wght@0,400;0,700;1,400&family=Raleway:wght@900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --theme: #22938e;
+      }
+      html {
+        height: 100%;
+      }
+      body {
+        display: flex;
+        min-height: 100%;
+        flex-direction: column;
+        margin: 0;
+        font-family: 'Open Sans', sans-serif;
+        box-sizing: border-box;
+        padding: 0.5in;
+        font-size: 14px;
+      }
+      @page {
+        margin: 0;
+      }
+      .flex {
+        flex: auto;
+        min-height: 20px;
+      }
+
+      .icon {
+        display: inline-block;
+        font-size: 0;
+        width: 20px;
+        height: 20px;
+        background-size: contain;
+        flex: none;
+      }
+      .phone-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%0A%3E%3Cpath d='M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z' /%3E%3C/svg%3E");
+      }
+      .mail-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%0A%3E%3Cpath d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z' /%3E%3Cpolyline points='22,6 12,13 2,6' /%3E%3C/svg%3E");
+      }
+      .github-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%0A%3E%3Cpath d='M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22' /%3E%3C/svg%3E");
+      }
+      .github-icon-white {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%0A%3E%3Cpath d='M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22' /%3E%3C/svg%3E");
+      }
+      .linkedin-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%0A%3E%3Cpath d='M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z' /%3E%3Crect x='2' y='9' width='4' height='12' /%3E%3Ccircle cx='4' cy='4' r='2' /%3E%3C/svg%3E%0A© 2021 GitHub, Inc.%0ATerms%0A");
+      }
+      .globe-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%0A%3E%3Ccircle cx='12' cy='12' r='10' /%3E%3Cline x1='2' y1='12' x2='22' y2='12' /%3E%3Cpath d='M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' /%3E%3C/svg%3E");
+      }
+      .link-icon {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%0A%3E%3Cpath d='M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3' /%3E%3Cline x1='8' y1='12' x2='16' y2='12' /%3E%3C/svg%3E");
+      }
+
+      .header {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 14px;
+        letter-spacing: 1px;
+        margin: 0;
+        color: var(--theme);
+      }
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .inline-info {
+        display: flex;
+      }
+      .inline-info p {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      .inline-info .icon {
+        margin-left: 10px;
+        margin-top: 2px;
+      }
+      .name {
+        font-family: 'Montserrat', 'Noto Sans TC', sans-serif;
+        font-weight: 900;
+        margin: 0;
+        font-size: 18px;
+      }
+      .school-city {
+        font-style: italic;
+        margin-left: 15px;
+      }
+      .school-gpa {
+        margin-left: 15px;
+      }
+      .label {
+        font-family: 'Raleway', sans-serif;
+        font-weight: 900;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.5);
+      }
+      .courses-label:not(:first-child) {
+        margin-left: 15px;
+      }
+      .school-date {
+        margin-left: auto;
+      }
+      .desc {
+        margin: 0;
+        margin-top: 10px;
+      }
+      .section > .desc {
+        margin-top: -10px;
+      }
+      .subprojects {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        padding-left: 20px;
+        border-left: 5px solid rgba(0, 0, 0, 0.3);
+      }
+      .ext-link {
+        color: #2c94ff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      .ext-link[href]:hover {
+        text-decoration: underline;
+      }
+      .course-desc {
+        color: rgba(0, 0, 0, 0.5);
+      }
+
+      .intro {
+        display: flex;
+        position: relative;
+        margin: -0.5in;
+        margin-bottom: 0.5in;
+        padding: 0.5in;
+        padding-bottom: 20px;
+        color: white;
+        background-color: var(--theme);
+        position: relative;
+      }
+      .my-name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        margin: 0;
+        font-size: 48px;
+        margin-right: 0.5in;
+        align-self: flex-end;
+      }
+      .logo {
+        position: absolute;
+        border: 10px solid var(--theme);
+        fill: var(--theme);
+        background-color: white;
+        top: 100%;
+        transform: translateY(-50%);
+        right: 0.5in;
+        width: 64px;
+        padding: 12px;
+        border-radius: 50%;
+      }
+      .contact-info {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0 20px;
+      }
+      .contact-entry {
+        display: flex;
+        align-items: center;
+      }
+      .contact-entry .icon {
+        margin-right: 10px;
+        opacity: 0.8;
+      }
+      .contact-link {
+        color: inherit;
+        text-decoration: none;
+        word-break: break-word;
+      }
+      .contact-link:hover {
+        text-decoration: underline;
+      }
+
+      .skills-desc {
+        margin: 10px 0;
+      }
+      .skills {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        margin: 0;
+      }
+
+      @media screen and (max-width: 800px) {
+        .inline-info {
+          flex-wrap: wrap;
+        }
+        .contact-info {
+          grid-template-rows: unset;
+          grid-template-columns: 1fr;
+          grid-auto-flow: row;
+        }
+      }
+      @media (max-width: 600px) {
+        .my-name {
+          font-size: 24px;
+          margin-right: 20px;
+        }
+        .subprojects {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="intro">
+      <h1 class="my-name">Sean Yen</h1>
+
+      <div class="contact-info">
+        <div class="contact-entry">
+          <div class="icon mail-icon">Email</div>
+          <a id="email" class="contact-link">iggle@gmail.com</a>
+        </div>
+        <div class="contact-entry">
+          <div class="icon globe-icon">Website</div>
+          <a href="https://sheeptester.github.io/" class="contact-link"
+            >sheeptester.github.io</a
+          >
+        </div>
+        <div class="contact-entry">
+          <div class="icon phone-icon">Phone</div>
+          <a id="phone" class="contact-link">(123) 456-7890</a>
+        </div>
+        <div class="contact-entry">
+          <div class="icon github-icon-white">GitHub</div>
+          <a href="https://github.com/SheepTester" class="contact-link"
+            >SheepTester</a
+          >
+        </div>
+      </div>
+
+      <svg
+        viewBox="0 0 480 480"
+        xmlns="http://www.w3.org/2000/svg"
+        class="logo"
+        aria-label="SheepTester logo"
+      >
+        <path
+          d="
+          M90 90
+          a50 50 0 0 0 0 100
+          H98.579
+          A150 150 0 1 0 381.421 190
+          H390
+          a50 50 0 0 0 0 -100
+          a50 50 0 1 1 -100 0
+          a50 50 0 1 1 -100 0
+          a50 50 0 1 1 -100 0
+          z
+        "
+        />
+      </svg>
+    </section>
+
+    <section class="section list">
+      <h2 class="header">Projects</h2>
+
+      <div class="inline-info project-info">
+        <h3 class="name project-name">Personal website</h3>
+        <a
+          href="https://sheeptester.github.io/"
+          class="icon link-icon"
+          title="Link"
+        >
+          Link
+        </a>
+        <a
+          href="https://github.com/SheepTester/sheeptester.github.io"
+          class="icon github-icon"
+          title="Github"
+        >
+          Github
+        </a>
+      </div>
+      <p class="desc project-desc">
+        A portfolio consisting of 600 web pages I’ve made since eighth grade
+        with varying purposes and complexity. Received over 27k clicks from
+        Google Search in the last 3 months. Includes:
+      </p>
+      <div class="subprojects">
+        <div class="subproject">
+          <div class="inline-info project-info">
+            <h4 class="name project-name">HTMLifier</h4>
+            <a
+              href="https://sheeptester.github.io/htmlifier/"
+              class="icon link-icon"
+              title="Link"
+            >
+              Link
+            </a>
+            <a
+              href="https://github.com/SheepTester/htmlifier/"
+              class="icon github-icon"
+              title="Github"
+            >
+              Github
+            </a>
+          </div>
+          <p class="desc project-desc">
+            Packages projects made with
+            <a href="https://scratch.mit.edu/" class="ext-link">Scratch</a>.
+            Received 18k clicks in the past quarter.
+          </p>
+        </div>
+
+        <div class="subproject">
+          <div class="inline-info project-info">
+            <h4 class="name project-name">Discord webhook sender</h4>
+            <a
+              href="https://sheeptester.github.io/javascripts/webhook-sender.html"
+              class="icon link-icon"
+              title="Link"
+            >
+              Link
+            </a>
+            <a
+              href="https://github.com/SheepTester/sheeptester.github.io/blob/master/javascripts/webhook-sender.html"
+              class="icon github-icon"
+              title="Github"
+            >
+              Github
+            </a>
+          </div>
+          <p class="desc project-desc">
+            A WYSIWYG editor for creating announcements on
+            <a href="https://discord.com/" class="ext-link">Discord</a>.
+            Received 5.5k clicks in the past quarter.
+          </p>
+        </div>
+
+        <!-- <div class="subproject">
+          <div class="inline-info project-info">
+            <h4 class="name project-name">E羊icques</h4>
+            <a
+              href="https://sheeptester.github.io/scratch-gui/"
+              class="icon link-icon"
+              title="Link"
+            >
+              Link
+            </a>
+            <a
+              href="https://github.com/SheepTester/scratch-gui"
+              class="icon github-icon"
+              title="Github"
+            >
+              Github
+            </a>
+          </div>
+          <p class="desc project-desc">
+            A modification of
+            <a href="https://scratch.mit.edu/" class="ext-link">Scratch</a>
+            allowing for more customizability. Allowed me to learn React on my
+            own.
+          </p>
+        </div> -->
+
+        <div class="subproject">
+          <div class="inline-info project-info">
+            <h4 class="name project-name">Trig drill generator</h4>
+            <a
+              href="https://sheeptester.github.io/hello-world/drills.html"
+              class="icon link-icon"
+              title="Link"
+            >
+              Link
+            </a>
+            <a
+              href="https://github.com/SheepTester/hello-world/blob/master/drills.html"
+              class="icon github-icon"
+              title="Github"
+            >
+              Github
+            </a>
+          </div>
+          <p class="desc project-desc">
+            A timed quiz that generates questions about trigonometric special
+            angles as practice for students in my trigonometry class.
+          </p>
+        </div>
+
+        <div class="subproject">
+          <div class="inline-info project-info">
+            <h4 class="name project-name">OlamREEE</h4>
+            <a
+              href="https://sheeptester.github.io/olamreee/"
+              class="icon link-icon"
+              title="Link"
+            >
+              Link
+            </a>
+            <a
+              href="https://github.com/SheepTester/olamreee"
+              class="icon github-icon"
+              title="Github"
+            >
+              Github
+            </a>
+          </div>
+          <p class="desc project-desc">
+            A digital version of a chemistry project. Students found it more
+            convenient to use, and my teacher switched to it during distance
+            learning.
+          </p>
+        </div>
+      </div>
+
+      <div class="inline-info project-info">
+        <h3 class="name project-name">Unofficial Gunn Web App</h3>
+        <a
+          href="https://orbiit.github.io/gunn-web-app/"
+          class="icon link-icon"
+          title="Link"
+        >
+          Link
+        </a>
+        <a
+          href="https://github.com/Orbiit/gunn-web-app"
+          class="icon github-icon"
+          title="Github"
+        >
+          Github
+        </a>
+      </div>
+      <p class="desc project-desc">
+        A web app that displayed the schedule and provided other utilities for
+        my high school used by students, parents, and staff. Received nearly 1k
+        clicks per month from Google with up to 736 concurrent users.
+      </p>
+
+      <div class="inline-info project-info">
+        <h3 class="name project-name">Elimination</h3>
+        <a
+          href="https://orbiit.github.io/elimination/"
+          class="icon link-icon"
+          title="Link"
+        >
+          Link
+        </a>
+        <a
+          href="https://github.com/Orbiit/elimination"
+          class="icon github-icon"
+          title="Github"
+        >
+          Github
+        </a>
+      </div>
+      <p class="desc project-desc">
+        I volunteered to make and host a website for a school-sponsored
+        assassination game with 323 student participants.
+      </p>
+    </section>
+
+    <div class="flex"></div>
+
+    <section class="section list">
+      <h2 class="header">Education</h2>
+
+      <article class="school">
+        <div class="inline-info school-info">
+          <h3 class="name school-name">University of California, San Diego</h3>
+          <p class="school-city">La Jolla, CA</p>
+          <p class="school-gpa"><span class="label">GPA</span> N/A</p>
+          <p class="school-date">Sept. 2021&ndash;June 2025</p>
+        </div>
+        <p class="desc course-list">
+          <span>Sophomore standing.</span>
+          <span class="label courses-label">Courses</span>
+          <span class="course-name">CSE 11</span>
+          <span class="course-desc">(ongoing)</span>
+        </p>
+      </article>
+
+      <article class="school">
+        <div class="inline-info school-info">
+          <h3 class="name school-name">Henry M. Gunn High School</h3>
+          <p class="school-city">Palo Alto, CA</p>
+          <p class="school-gpa">
+            <span class="label">GPA</span> 4.0 (<span class="label"
+              >weighted</span
+            >
+            4.44)
+          </p>
+          <p class="school-date">Aug. 2017&ndash;June 2021</p>
+        </div>
+        <p class="desc course-list">
+          <span class="label courses-label">Courses</span>
+          <span class="course-name"
+            >Functional and Object-Oriented Programming</span
+          >
+          <span class="course-desc"> (recursion, higher order functions)</span>,
+          <span class="course-name">AP Computer Science A</span>
+          <span class="course-desc">
+            (iterative recursion, linked lists, message passing, environments,
+            big O notation, sorting algorithms)
+          </span>
+        </p>
+      </article>
+    </section>
+
+    <div class="flex"></div>
+
+    <section class="section">
+      <h2 class="header">Skills</h2>
+      <p class="skills-desc">
+        Full-stack web development, web scraping, and these languages and tools:
+      </p>
+
+      <p class="skills">
+        <!-- languages -->
+        <span>HTML/CSS</span>
+        <span>JavaScript</span>
+        <span>TypeScript</span>
+        <span>Python</span>
+        <span>Rust</span>
+        <span>Java</span>
+        <span>Racket</span>
+        <span>Elm</span>
+        <!-- libraries -->
+        <span>React</span>
+        <span>Webpack</span>
+        <span>Rollup</span>
+        <span>jQuery</span>
+        <span>Express</span>
+        <!-- runtimes -->
+        <span>Node</span>
+        <span>Deno</span>
+        <!-- human languages -->
+        <span>Spanish</span>
+      </p>
+    </section>
+
+    <script>
+      // [...btoa('...')].reverse().join('')
+      function decode (str) {
+        return atob([...str].reverse().join(''))
+      }
+
+      // Ensure some user input to discourage web scrapers from scraping my
+      // email/phone number
+      let userInputHandled = false
+      const handleUserInput = () => {
+        if (!userInputHandled) {
+          const email = document.getElementById('email')
+          const phone = document.getElementById('phone')
+          email.href = decode('=02bj5CbpFWbnBUZtV3clJ3K5F2cuE2czVnOvRHbpFWb')
+          email.textContent = decode('t92YuwWah12ZAlXYz5SYzNXd')
+          phone.href = decode('2YzN20CN1ITLwUjNtEjOsVGd')
+          phone.textContent = decode('=YjN3YTL0UjMgkCM1YDK')
+          userInputHandled = true
+        }
+      }
+      document.addEventListener('keydown', handleUserInput, { once: true })
+      document.addEventListener('pointerdown', handleUserInput, { once: true })
+      document.addEventListener('pointermove', handleUserInput, { once: true })
+    </script>
+  </body>
+</html>

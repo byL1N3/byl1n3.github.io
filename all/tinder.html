@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tinder but for web pages</title>
+    <meta
+      name="description"
+      content="Quickly preview and reject the many web pages on this website."
+    />
+
+    <link rel="stylesheet" type="text/css" href="/sheep3.css" />
+    <script src="/sheep3.js" charset="utf-8"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Design based on https://dribbble.com/shots/15212873/attachments/6958010?mode=media */
+
+      html,
+      body {
+        height: 100%;
+      }
+      html {
+        /* The hidden likes list apparently stretches outside of body regardless
+        of <body>'s overflow status */
+        overflow-x: hidden;
+      }
+      body {
+        margin: 0;
+        /*
+          Includes fonts (from Wiktionary) for Traditional Chinese and Hangul
+            because of /vertical/.
+          Latin font stack is from paly.win + GitHub.
+          Admittedly, just `'Monsterrat', sans-serif` would probably suffice.
+        */
+        font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, 'Helvetica Neue', Helvetica, Arial, 'PingFang TC',
+          'Source Han Sans TC', 'Source Han Sans TW', 'Noto Sans CJK TC',
+          'Microsoft Jhenghei', MOESongUN, PMingLiU, PMingLiU-ExtB, MingLiU,
+          MingLiU-ExtB, Ming, 'Heiti TC', HanaMinA, HanaMinB,
+          'Apple SD Gothic Neo', 'Malgun Gothic', Dotum, Gulim,
+          'NanumBarunGothic YetHangul', NanumBarunGothic, UnDotum,
+          'Source Han Sans K', 'Source Han Sans KR', 'Noto Sans CJK KR',
+          NanumGothic, 'NanumMyeongjo YetHangul', NanumMyeongjo, Batang,
+          UnBatang, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+          'Segoe UI Symbol';
+        font-size: 14px;
+        display: flex;
+        overflow-x: hidden;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        -webkit-appearance: none;
+        border: none;
+        background: none;
+        color: inherit;
+        font: inherit;
+      }
+      button:not(:disabled) {
+        cursor: pointer;
+      }
+      .cards {
+        flex: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        position: relative;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        height: 36em;
+        width: 20em;
+        margin: -18em -10em;
+        border-radius: 2em;
+        box-shadow: 0 0.36em 2em rgba(52, 67, 77, 0.2);
+        background-color: white;
+        position: relative;
+        /* Scale card down to zoom out iframe */
+        font-size: 2em;
+        transform: scale(0.5);
+        touch-action: none;
+        user-select: none;
+      }
+      .back {
+        background-image: url('./assets/card-back.svg'),
+          linear-gradient(-15deg, #bec4ce, #e3eaef);
+        background-size: 8em, auto;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .rejected,
+      .accepted {
+        z-index: 100;
+      }
+      .rejected {
+        animation: rejected 0.8s cubic-bezier(1, 0, 1, 1) forwards;
+      }
+      @keyframes rejected {
+        from {
+          transform: scale(0.5);
+        }
+        to {
+          transform: translate(-18em, 50vh) translateY(100%) scale(0.5)
+            rotate(-60deg);
+        }
+      }
+      .accepted {
+        animation: accepted 0.8s cubic-bezier(1, 0, 1, 1) forwards;
+      }
+      @keyframes accepted {
+        from {
+          transform: scale(0.5);
+        }
+        to {
+          transform: translateX(50vw) translateX(100%) scale(0.8) rotate(15deg);
+        }
+      }
+      .unselected {
+        transform: scale(0.45);
+      }
+      .flip-out {
+        animation: flip-out 0.5s cubic-bezier(0.4, 0, 1, 0.6) forwards;
+      }
+      @keyframes flip-out {
+        from {
+          transform: scale(0.45) perspective(70em);
+        }
+        to {
+          transform: scale(0.5) perspective(70em) rotateY(90deg);
+        }
+      }
+      .flip-in {
+        animation: flip-in 0.5s cubic-bezier(0, 0.4, 0.6, 1) 0.5s backwards;
+      }
+      @keyframes flip-in {
+        from {
+          transform: scale(0.5) perspective(70em) rotateY(-90deg);
+        }
+        to {
+          transform: scale(0.5) perspective(70em);
+        }
+      }
+      .come-in {
+        animation: come-in 0.5s 0.3s both;
+      }
+      @keyframes come-in {
+        from {
+          transform: scale(0.3);
+        }
+        to {
+          transform: scale(0.45);
+        }
+      }
+      .preview {
+        flex: auto;
+        position: relative;
+      }
+      .iframe {
+        height: 100%;
+        width: 100%;
+        border: none;
+        pointer-events: none;
+        border-top-left-radius: 2em;
+        border-top-right-radius: 2em;
+      }
+      .buttons {
+        display: flex;
+        justify-content: center;
+        padding: 1em;
+      }
+      .card-btn {
+        width: 3.5em;
+        height: 3.5em;
+        border-radius: 50%;
+        background-size: 1.75em;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0.7em;
+      }
+      .card-btn,
+      .reset-rejected,
+      .likes-expand-btn {
+        box-shadow: 0 0.2em 1em rgba(146, 43, 113, 0.3);
+        transition: box-shadow 0.2s, transform 0.5s, filter 0.5s;
+      }
+      .card-btn:hover,
+      .reset-rejected:hover:not(:disabled),
+      .likes-expand-btn {
+        box-shadow: 0 0.5em 1.5em rgba(146, 43, 113, 0.3);
+      }
+      .card-btn:active,
+      .reset-rejected:active:not(:disabled),
+      .likes-expand-btn {
+        box-shadow: 0 0.1em 0.2em rgba(146, 43, 113, 0.3);
+      }
+      .reject-btn {
+        background-image: url('./assets/material-close.svg');
+      }
+      .accept-btn {
+        background-image: url('./assets/material-favourite.svg'),
+          linear-gradient(-60deg, #ff0063, #e34dff);
+        background-size: 1.75em, auto;
+      }
+      .possible-reject .reject-btn,
+      .possible-accept .accept-btn {
+        transform: scale(1.2);
+      }
+      .possible-reject .accept-btn,
+      .possible-accept .reject-btn {
+        transform: scale(0.8);
+        box-shadow: none;
+        filter: grayscale(1);
+      }
+      .open-btn {
+        display: inline-block;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background-image: url('./assets/material-launch.svg');
+        background-color: rgba(232, 13, 88, 0.5);
+        -webkit-backdrop-filter: blur(0.5em);
+        backdrop-filter: blur(0.5em);
+      }
+      .meta {
+        padding: 1.5em;
+        padding-bottom: 0;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+      .title {
+        font-weight: 800;
+        margin: 0;
+        font-size: 2em;
+        line-height: 1;
+      }
+      .description {
+        margin: 0;
+        margin-top: 0.5em;
+      }
+      .badges {
+        margin-top: 0.5em;
+        margin-right: -1.5em;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.4em 1em;
+        border-radius: 2em;
+        margin-right: 0.5em;
+        text-transform: uppercase;
+      }
+      .js-badge {
+        background-color: #f0db4f;
+        color: #323330;
+      }
+      .visited-badge {
+        pointer-events: none;
+        color: white;
+        background-color: white;
+        text-decoration: none;
+        user-select: none;
+      }
+      .visited-badge:visited {
+        background-color: #b527e0;
+      }
+      .era-badge {
+        color: white;
+      }
+      .era-1-badge {
+        background-image: linear-gradient(120deg, #92c1bc, #6391a0);
+      }
+      .era-2-badge {
+        background-image: linear-gradient(120deg, #ff8025, #e828ad);
+      }
+      .era-3-badge {
+        background-image: linear-gradient(120deg, #20de88, #28bbe8);
+      }
+      .no-more-cards {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        font-size: 14px;
+        animation: fade-in 0.5s;
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .reset-rejected {
+        padding: 4px 10px;
+        border-radius: 50px;
+        background-image: linear-gradient(-15deg, #ff0063, #e34dff);
+        color: white;
+      }
+      .reset-rejected:disabled {
+        background-image: none;
+        background-color: #cccccc;
+        box-shadow: none;
+      }
+      .undo-btn {
+        position: absolute;
+        z-index: 150;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        bottom: 10px;
+        padding: 10px 20px;
+        color: rgba(0, 0, 0, 0.7);
+        transition: opacity 0.5s;
+      }
+      .undo-btn:hover {
+        text-decoration: underline;
+      }
+      .undo-btn:disabled {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .undo-note {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        bottom: 20px;
+        height: 60px;
+        width: 300px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 100px;
+        padding-left: 60px;
+        padding-right: 20px;
+        background-image: url('./assets/material-done.svg');
+        background-repeat: no-repeat;
+        background-position: 18px;
+        animation: fade-out 0.5s 3s forwards;
+        transition: transform 0.3s;
+      }
+      .hide-now {
+        transform: translateY(100%) translateY(20px);
+        transition-timing-function: cubic-bezier(0.5, 0, 1, 1);
+        animation: none;
+      }
+      @keyframes fade-out {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
+      .likes {
+        display: flex;
+        flex-direction: column;
+        width: 250px;
+        box-shadow: 0 0 15px rgba(52, 67, 77, 0.2);
+        background-color: white;
+        transition: margin-left 0.5s, transform 0.5s, box-shadow 0.5s;
+        position: relative;
+        z-index: 170;
+      }
+      .hide-likes {
+        margin-left: -250px;
+        transform: translateX(250px);
+        box-shadow: none;
+      }
+      .likes-header {
+        display: flex;
+        align-items: center;
+        flex: none;
+      }
+      .likes-heading {
+        font-size: 24px;
+        padding: 20px;
+        margin: 0;
+        font-weight: 800;
+        flex: auto;
+      }
+      .likes-expand-btn {
+        display: none;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        flex: none;
+        background-image: url('./assets/material-chevron-left.svg');
+        background-size: 24px;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      @media (max-width: 600px) {
+        .likes {
+          position: fixed;
+          top: 0;
+          right: -250px;
+          bottom: 0;
+          transition: right 0.5s, box-shadow 0.5s;
+        }
+        .hide-likes {
+          margin-left: none;
+          transform: none;
+          box-shadow: none;
+        }
+        .expand-likes {
+          right: 0;
+        }
+        .likes-heading {
+          padding: 20px 0;
+        }
+        .likes-expand-btn {
+          display: inline-block;
+          transform: translateX(-60px);
+          background-color: white;
+          transition: transform 0.5s, box-shadow 0.5s;
+        }
+        .hide-likes .likes-expand-btn {
+          transform: translateX(0);
+        }
+        .expand-likes .likes-expand-btn {
+          transform: rotate(180deg);
+          box-shadow: none;
+        }
+      }
+      .list {
+        flex: auto;
+        overflow: auto;
+      }
+      .liked {
+        display: flex;
+        height: 60px;
+        box-sizing: border-box;
+        text-decoration: none;
+        padding: 10px 20px;
+        color: inherit;
+      }
+      .liked:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+      .liked:visited {
+        color: #a3a3a3;
+      }
+      .like-meta {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 0;
+        flex: auto;
+      }
+      .like-title,
+      .like-description {
+        white-space: pre;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        margin: 0;
+      }
+      .like-title {
+        font-weight: 800;
+      }
+      .like-remove-btn {
+        background-image: url('./assets/material-close-grey.svg');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 24px;
+        margin-right: -10px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        align-self: center;
+      }
+      .like-remove-btn:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        background-image: url('./assets/material-close.svg');
+      }
+      .spacer {
+        display: block;
+      }
+      .slide-in {
+        animation: slide-in 0.5s;
+      }
+      @keyframes slide-in {
+        from {
+          margin-top: -60px;
+        }
+        to {
+          margin-top: 0;
+        }
+      }
+      .footer {
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 70px;
+        margin-right: 60px;
+      }
+      .reset-accepted {
+        color: #ff254d;
+        padding: 10px;
+      }
+      .reset-accepted:hover {
+        text-decoration: underline;
+      }
+      .footer-note {
+        margin: 0;
+        padding: 0 10px;
+        padding-bottom: 10px;
+      }
+
+      .cinematic {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        z-index: 200;
+      }
+      .recede {
+        pointer-events: none;
+      }
+      .bar {
+        background-color: black;
+        height: 20vh;
+        transition: height 1s;
+      }
+      .recede .bar {
+        height: 0;
+      }
+      .title-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex: auto;
+        color: white;
+        background-image: linear-gradient(
+          -30deg,
+          rgba(255, 0, 99, 0.8),
+          rgba(227, 77, 255, 0.8)
+        );
+        padding: 50px;
+        text-align: center;
+        transition: opacity 1s;
+      }
+      .recede .title-screen {
+        opacity: 0;
+      }
+      .title-screen-title {
+        font-weight: 800;
+        margin: 0;
+      }
+      .title-screen-subtitle {
+        margin: 0;
+        margin-top: 20px;
+      }
+
+      .summary {
+        position: fixed;
+        z-index: 101;
+        opacity: 0;
+        padding: 10px;
+        transition: opacity 0.2s;
+        cursor: default;
+      }
+      .summary:hover {
+        opacity: 1;
+      }
+      .summary span {
+        font-weight: bold;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cinematic" id="cinematic">
+      <div class="bar"></div>
+      <div class="title-screen" id="title-screen">
+        <h1 class="title-screen-title">
+          There are <span id="count">many</span> web pages on this site.
+        </h1>
+        <p class="title-screen-subtitle">Have you seen them all?</p>
+        <noscript>
+          <p class="title-screen-subtitle">
+            This experience requires JavaScript.
+          </p>
+        </noscript>
+      </div>
+      <div class="bar"></div>
+    </div>
+    <div class="summary">
+      <span id="reviewed">0</span>/<span id="total">0</span> pages reviewed.
+    </div>
+    <section class="cards" id="cards">
+      <article class="card back hidden" id="deck"></article>
+      <article class="card back unselected" id="next"></article>
+      <div class="no-more-cards hidden" id="no-more-cards">
+        <p>That is all.</p>
+        <button class="reset-rejected" id="reset-rejected">
+          Give the rejected ones another chance.
+        </button>
+      </div>
+      <button class="undo-btn" id="undo-btn" disabled>Undo</button>
+      <span class="undo-note hidden" id="undo-note">
+        The web page has been added back to the deck and will appear after this
+        one.
+      </span>
+    </section>
+    <section class="likes hide-likes" id="likes">
+      <div class="likes-header">
+        <button
+          class="likes-expand-btn"
+          id="expand-btn"
+          aria-label="Expand/collapse the inspection list."
+        ></button>
+        <h2 class="likes-heading">Inspection list</h2>
+      </div>
+      <div class="list" id="list">
+        <span class="spacer" id="spacer"></span>
+      </div>
+      <div class="footer">
+        <button class="reset-accepted" id="reset-accepted">Clear all.</button>
+        <p class="footer-note">Note: This will add them back to the deck.</p>
+      </div>
+    </section>
+    <script src="../javascripts/_dom2.js"></script>
+    <script>
+      const params = new URL(window.location).searchParams
+
+      const LS_ID = '[all] tinder.likes'
+      let results
+      try {
+        results = JSON.parse(localStorage.getItem(LS_ID))
+        if (!Array.isArray(results.likes) || !Array.isArray(results.dislikes)) {
+          throw new TypeError('Weird structure.')
+        }
+      } catch {
+        results = { likes: [], dislikes: [] }
+      }
+      const reviewed = document.getElementById('reviewed')
+      reviewed.textContent = results.likes.length + results.dislikes.length
+      function handleResultsChange () {
+        localStorage.setItem(LS_ID, JSON.stringify(results))
+        reviewed.textContent = results.likes.length + results.dislikes.length
+      }
+
+      const count = document.getElementById('count')
+      const total = document.getElementById('total')
+      const cinematic = document.getElementById('cinematic')
+      const titleScreen = document.getElementById('title-screen')
+      let paths
+      fetch('./sitemap.txt')
+        .then(r => r.text())
+        .then(sitemap => {
+          paths = sitemap.trim().split(/\r?\n/)
+          count.textContent = paths.length
+          total.textContent = paths.length
+          if (params.get('shuffle') === 'false') {
+            paths.reverse()
+          } else {
+            // Shuffle
+            for (let i = paths.length; i--; ) {
+              const index = Math.floor(Math.random() * (i + 1))
+              if (i !== index) {
+                ;[paths[i], paths[index]] = [paths[index], paths[i]]
+              }
+            }
+          }
+          const alreadySeen = [
+            ...results.dislikes,
+            ...results.likes.map(({ path }) => path)
+          ]
+          paths = paths.filter(path => !alreadySeen.includes(path))
+          if (paths.length > 0) {
+            titleScreen.addEventListener(
+              'transitionend',
+              () => {
+                cinematic.classList.replace('recede', 'hidden')
+              },
+              { once: true }
+            )
+            let timeoutId = setTimeout(() => {
+              cinematic.classList.add('recede')
+              showCardForPath(paths.pop())
+              timeoutId = null
+            }, 2000)
+            cinematic.addEventListener('click', () => {
+              if (timeoutId) {
+                cinematic.classList.add('recede')
+                showCardForPath(paths.pop())
+                clearTimeout(timeoutId)
+              }
+            })
+          } else {
+            cinematic.classList.add('hidden')
+            showCardForPath(undefined)
+          }
+        })
+
+      const likesContainer = document.getElementById('likes')
+      const likesList = document.getElementById('list')
+      const spacer = document.getElementById('spacer')
+      spacer.addEventListener('animationend', () => {
+        spacer.classList.remove('slide-in')
+      })
+      const expandBtn = document.getElementById('expand-btn')
+      expandBtn.addEventListener('click', () => {
+        if (likesContainer.classList.contains('expand-likes')) {
+          likesContainer.classList.remove('expand-likes')
+        } else if (!likesContainer.classList.contains('hide-likes')) {
+          likesContainer.classList.add('expand-likes')
+        }
+      })
+      const undoBtn = document.getElementById('undo-btn')
+      const undoNote = document.getElementById('undo-note')
+      undoBtn.addEventListener('click', () => {
+        if (results.dislikes.length === 0) return
+        paths.push(results.dislikes.pop())
+        handleResultsChange()
+        undoNote.classList.remove('hidden', 'hide-now')
+        undoBtn.disabled = true
+        // If `paths` had previously been empty before restoring the last
+        // dislike, then the "That is all." note is currently showing. Will have
+        // to reload the page.
+        if (paths.length === 1) {
+          window.location.reload()
+        }
+      })
+      undoNote.addEventListener('animationend', () => {
+        undoNote.classList.remove('hide-now')
+        undoNote.classList.add('hidden')
+      })
+      function createCard (path, title, description, era, requiresJs) {
+        const iframe = Elem('iframe', {
+          className: 'iframe',
+          src: path,
+          tabIndex: -1,
+          sandbox: 'allow-same-origin'
+        })
+        iframe.addEventListener('load', () => {
+          if (iframe.contentDocument) {
+            iframe.contentDocument.body.style.overflow = 'hidden'
+          }
+        })
+        let decided = false
+        const handleDecision = async (decision, useAnimation = true) => {
+          if (decided) return
+          decided = { decision, useAnimation }
+          const accept = decision === 'accepted'
+          if (accept) {
+            results.likes.push({ path, title, description })
+            undoBtn.disabled = true
+          } else {
+            results.dislikes.push(path)
+            undoBtn.disabled = false
+            undoNote.classList.add('hide-now')
+          }
+          handleResultsChange()
+          if (animationEnd) await animationEnd
+          if (accept) likesContainer.classList.remove('hide-likes')
+          if (useAnimation) {
+            card.classList.add(decision)
+            card.addEventListener(
+              'animationend',
+              () => {
+                // Animation of card toss is done.
+                card.remove()
+                if (accept) {
+                  spacer.classList.add('slide-in')
+                  spacer.after(createLiked(path, title, description))
+                }
+              },
+              { once: true }
+            )
+          }
+          showCardForPath(paths.pop())
+        }
+        const rejectBtn = Elem('button', {
+          className: 'card-btn reject-btn',
+          title: 'This does not please me.',
+          ariaLabel: 'This does not please me.'
+        })
+        rejectBtn.addEventListener('click', () => handleDecision('rejected'))
+        const acceptBtn = Elem('button', {
+          className: 'card-btn accept-btn',
+          title: 'This sparks joy.',
+          ariaLabel: 'This sparks joy.'
+        })
+        acceptBtn.addEventListener('click', () => handleDecision('accepted'))
+        const card = Elem('article', { className: 'card' }, [
+          Elem('div', { className: 'preview' }, [
+            iframe,
+            Elem('a', {
+              className: 'card-btn open-btn',
+              href: path,
+              target: '_blank',
+              title: 'Open site in new tab',
+              ariaLabel: 'Open site in new tab'
+            })
+          ]),
+          Elem('div', { className: 'meta' }, [
+            Elem('h2', { className: 'title' }, [title]),
+            description &&
+              Elem('p', { className: 'description' }, [description]),
+            Elem('div', { className: 'badges' }, [
+              era &&
+                Elem(
+                  'span',
+                  {
+                    className: `badge era-badge era-${era}-badge`,
+                    title:
+                      era === 3
+                        ? 'Made between 2018-12-15 and today.'
+                        : era === 2
+                        ? 'Made between 2017-11-30 and 2018-12-14.'
+                        : 'Made before 2017-11-30.'
+                  },
+                  [`Era ${era}`]
+                ),
+              requiresJs &&
+                Elem(
+                  'span',
+                  {
+                    className: 'badge js-badge',
+                    title:
+                      'The site may require JavaScript to show up properly. Try opening the site in a new tab.'
+                  },
+                  ['Req. JS']
+                ),
+              Elem(
+                'a',
+                {
+                  className: 'badge visited-badge',
+                  href: path,
+                  tabIndex: -1
+                },
+                ['Visited']
+              )
+            ])
+          ]),
+          Elem('buttons', { className: 'buttons' }, [rejectBtn, acceptBtn])
+        ])
+        const MIN_DRAG_RADIUS = 10
+        const MIN_SWIPE_DIST = 50
+        let pointer
+        card.addEventListener('pointerdown', e => {
+          if (!pointer) {
+            pointer = {
+              id: e.pointerId,
+              startX: e.clientX,
+              startY: e.clientY,
+              dragging: false
+            }
+          }
+        })
+        card.addEventListener('pointermove', e => {
+          if (pointer && pointer.id === e.pointerId) {
+            const deltaX = e.clientX - pointer.startX
+            const deltaY = e.clientY - pointer.startY
+            if (
+              !pointer.dragging &&
+              Math.hypot(deltaX, deltaY) > MIN_DRAG_RADIUS &&
+              !card.classList.contains('flip-in') &&
+              !decided
+            ) {
+              pointer.dragging = true
+              card.setPointerCapture(e.pointerId)
+              card.style.transition = null
+            }
+            if (pointer.dragging) {
+              card.style.transform = `translate(${deltaX}px, ${deltaY *
+                0.5}px) rotate(${Math.atan(deltaX / 1000)}rad) scale(0.5)`
+              if (deltaX < -MIN_SWIPE_DIST) {
+                card.classList.add('possible-reject')
+                card.classList.remove('possible-accept')
+              } else if (deltaX > MIN_SWIPE_DIST) {
+                card.classList.add('possible-accept')
+                card.classList.remove('possible-reject')
+              } else {
+                card.classList.remove('possible-reject')
+                card.classList.remove('possible-accept')
+              }
+            }
+          }
+        })
+        const handlePointerEnd = e => {
+          if (pointer && pointer.id === e.pointerId) {
+            if (pointer.dragging) {
+              if (card.classList.contains('possible-reject')) {
+                card.style.transition =
+                  'transform 0.5s cubic-bezier(1, 0, 1, 1)'
+                const deltaX = e.clientX - pointer.startX
+                card.style.transform = `translate(${deltaX -
+                  500}px, 50vh) translateY(100%) scale(0.5) rotate(-60deg)`
+                handleDecision('rejected', false)
+              } else if (card.classList.contains('possible-accept')) {
+                card.style.transition =
+                  'transform 0.5s cubic-bezier(0.3, 0, 1, 0.7)'
+                card.style.transform = `translateX(50vw) translateX(100%) scale(0.8) rotate(15deg)`
+                handleDecision('accepted', false)
+              } else {
+                card.style.transition = 'transform 0.5s'
+                card.style.transform = null
+              }
+            }
+            pointer = null
+          }
+        }
+        card.addEventListener('pointerup', handlePointerEnd)
+        card.addEventListener('pointercancel', handlePointerEnd)
+        card.addEventListener('transitionend', e => {
+          // transitionend events bubble from the card-btns
+          if (e.target === card) {
+            card.style.transition = null
+            if (decided && !decided.useAnimation) {
+              card.remove()
+              if (decided.decision === 'accepted') {
+                spacer.classList.add('slide-in')
+                spacer.after(createLiked(path, title, description))
+              }
+            }
+          }
+        })
+        return card
+      }
+
+      function createLiked (path, title, description) {
+        const removeBtn = Elem('button', {
+          className: 'like-remove-btn',
+          ariaLabel: 'Move to deck.',
+          title: 'Move to deck.'
+        })
+        removeBtn.addEventListener('click', e => {
+          e.preventDefault()
+          paths.unshift(path)
+          results.likes = results.likes.filter(liked => liked.path !== path)
+          handleResultsChange()
+          liked.remove()
+        })
+        const liked = Elem(
+          'a',
+          { className: 'liked', href: path, target: '_blank' },
+          [
+            Elem('div', { className: 'like-meta' }, [
+              Elem('p', { className: 'like-title', title }, [title]),
+              Elem('p', { className: 'like-description', title: description }, [
+                description
+              ])
+            ]),
+            removeBtn
+          ]
+        )
+        return liked
+      }
+
+      const cards = document.getElementById('cards')
+      const deck = document.getElementById('deck')
+      const next = document.getElementById('next')
+      const resetRejectedBtn = document.getElementById('reset-rejected')
+      const noMoreCards = document.getElementById('no-more-cards')
+      const parser = new DOMParser()
+      let animationEnd
+      async function showCardForPath (path) {
+        if (!path) {
+          noMoreCards.classList.remove('hidden')
+          next.classList.add('hidden')
+          if (results.dislikes.length === 0) {
+            resetRejectedBtn.disabled = true
+            resetRejectedBtn.title = 'You have not rejected any web pages.'
+          }
+          return
+        }
+        // Assumes that the `next` card is ready to be flipped. This is already
+        // the case after accepting/rejecting.
+        const doc = await fetch(path)
+          .then(r => r.text())
+          .then(html => parser.parseFromString(html, 'text/html'))
+        const card = createCard(
+          path,
+          doc.querySelector('title')?.textContent ?? path,
+          doc
+            .querySelector('meta[name="description"][content]')
+            ?.getAttribute('content'),
+          // The sheep.js version used gives an approximate date
+          doc.querySelector('script[src*="sheep3.js"]')
+            ? 3 // Starting 2018-12-15
+            : doc.querySelector('script[src*="sheep2.js"]')
+            ? 2 // Starting 2017-11-30
+            : doc.querySelector('script[src*="sheep.js"]')
+            ? 1
+            : null,
+          // If there's a non sheep.js script tag and the page is empty, then it
+          // probably requires JS to render
+          doc.querySelector(
+            'script:not([src*="sheep.js"]):not([src*="sheep2.js"]):not([src*="sheep3.js"])'
+          ) &&
+            [...doc.body.childNodes].every(node =>
+              node.nodeType === Node.ELEMENT_NODE
+                ? node.tagName === 'SCRIPT' ||
+                  node.tagName === 'CANVAS' ||
+                  !node.textContent.trim()
+                : node.nodeType === Node.TEXT_NODE
+                ? !node.nodeValue.trim()
+                : true
+            )
+        )
+        cards.append(card)
+        if (paths.length > 0) {
+          deck.classList.replace('hidden', 'come-in')
+        }
+        next.classList.replace('unselected', 'flip-out')
+        card.classList.add('flip-in')
+        animationEnd = new Promise(resolve => {
+          card.addEventListener(
+            'animationend',
+            () => {
+              // Animation of card flip is done.
+              if (paths.length > 0) {
+                deck.classList.replace('come-in', 'hidden')
+                next.classList.replace('flip-out', 'unselected')
+              } else {
+                next.classList.replace('flip-out', 'hidden')
+              }
+              card.classList.remove('flip-in')
+              resolve()
+            },
+            { once: true }
+          )
+        })
+      }
+
+      if (results.likes.length > 0) {
+        likesContainer.classList.remove('hide-likes')
+        for (const { path, title, description } of results.likes) {
+          spacer.after(createLiked(path, title, description))
+        }
+      }
+
+      resetRejectedBtn.addEventListener('click', () => {
+        results.dislikes = []
+        handleResultsChange()
+        window.location.reload()
+      })
+      document
+        .getElementById('reset-accepted')
+        .addEventListener('click', () => {
+          if (
+            !confirm(
+              'Are you sure you want to add all the web pages you marked as "This sparks joy" back to the deck?'
+            )
+          ) {
+            return
+          }
+          results.likes = []
+          handleResultsChange()
+          window.location.reload()
+        })
+    </script>
+  </body>
+</html>
